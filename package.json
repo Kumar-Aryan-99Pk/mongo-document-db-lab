@@ -1,0 +1,20 @@
+{
+  "name": "mongo-document-db-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A two-module MongoDB document database lab for e-commerce products and library books.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node scripts/seed.js",
+    "check": "node --check server.js && node --check models/Product.js && node --check models/Book.js && node --check scripts/seed.js && node --check public/app.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "dotenv": "^16.6.1",
+    "mongoose": "^8.19.1"
+  }
+}

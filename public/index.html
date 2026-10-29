@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#10231d" />
+  <meta name="description" content="A MongoDB document database lab for product catalog and library management CRUD, embedded schemas, and indexes." />
+  <title>DocuBase — MongoDB Document DB Lab</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="/" aria-label="DocuBase home">
+          <span class="brand-mark"><svg viewBox="0 0 40 40" role="img" aria-label="DocuBase logo"><path d="M20 3 34 11v18L20 37 6 29V11Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="m12 14 8-5 8 5v12l-8 5-8-5Z" fill="currentColor" opacity=".22"/><path d="m12 14 8 5 8-5M20 19v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <span class="brand-copy"><strong>DocuBase</strong><small>MONGODB DOCUMENT LAB</small></span>
+        </a>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <nav class="primary-nav" aria-label="Catalog modules">
+          <button class="nav-item active" type="button" data-module="products"><span class="nav-icon" aria-hidden="true">▦</span><span>Products</span><span class="nav-count" id="productNavCount">0</span></button>
+          <button class="nav-item" type="button" data-module="books"><span class="nav-icon" aria-hidden="true">▤</span><span>Library</span><span class="nav-count" id="bookNavCount">0</span></button>
+        </nav>
+        <div class="header-spacer"></div>
+        <div class="header-meta">
+          <div class="connection-indicator" data-state="checking" title="MongoDB connection status" aria-live="polite">
+            <span class="connection-copy"><small>DATABASE</small><strong id="dbStatusLabel">Checking connection…</strong></span>
+          </div>
+          <button class="icon-button refresh-button" id="refreshButton" type="button" aria-label="Refresh data" title="Refresh data"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M5.7 9A7 7 0 0 1 18 6.7L20 12M4 12l2 5.3A7 7 0 0 0 18.3 15" /></svg></button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="topbar">
+        <div class="breadcrumbs"><span>WORKSPACE</span><span class="crumb-slash">/</span><strong id="crumbCurrent">Product catalog</strong></div>
+        <div class="workspace-meta">Documents <span class="workspace-meta-separator">·</span> CRUD <span class="workspace-meta-separator">·</span> Indexes</div>
+      </div>
+      <section class="page-intro">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span><span id="pageEyebrow">E-COMMERCE MANAGEMENT</span></div>
+          <h1 id="pageTitle">Product <em>catalog</em></h1>
+          <p id="pageSubtitle">Manage product documents, variants, inventory, and embedded customer reviews.</p>
+        </div>
+        <button class="primary-button" id="addButton" type="button"><span class="plus">+</span><span id="addButtonText">Add product</span></button>
+      </section>
+
+      <section class="stats-grid" aria-label="Catalog statistics">
+        <article class="stat-card"><div class="stat-top"><span class="stat-label" id="statOneLabel">TOTAL PRODUCTS</span><span class="stat-icon green">▦</span></div><strong class="stat-number" id="statOne">—</strong><div class="stat-foot"><span id="statOneFoot">Documents in collection</span></div></article>
+        <article class="stat-card"><div class="stat-top"><span class="stat-label" id="statTwoLabel">ACTIVE PRODUCTS</span><span class="stat-icon blue">◉</span></div><strong class="stat-number" id="statTwo">—</strong><div class="stat-foot"><span id="statTwoFoot">Available for listing</span></div></article>
+        <article class="stat-card"><div class="stat-top"><span class="stat-label" id="statThreeLabel">CATEGORIES</span><span class="stat-icon gold">◇</span></div><strong class="stat-number" id="statThree">—</strong><div class="stat-foot"><span id="statThreeFoot">Distinct indexed groups</span></div></article>
+      </section>
+
+      <section class="catalog-panel">
+        <div class="panel-heading"><div><h2 id="listTitle">All products</h2><p id="listSubtitle">Search, filter, and manage product records.</p></div><span class="record-count" id="recordCount">0 records</span></div>
+        <div class="toolbar">
+          <label class="search-box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg><input id="searchInput" type="search" placeholder="Search name, brand, tags…" autocomplete="off" aria-label="Search catalog" /><kbd>↵</kbd></label>
+          <div class="filter-group"><label class="sr-only" for="categoryFilter">Filter by category</label><select id="categoryFilter"><option value="">All categories</option></select><label class="sr-only" for="statusFilter">Filter by status</label><select id="statusFilter"><option value="">All statuses</option><option value="active">Active</option><option value="draft">Draft</option></select></div>
+        </div>
+        <div id="notice" class="notice hidden" role="status"></div>
+        <div id="catalogGrid" class="catalog-grid" aria-live="polite"></div>
+        <div id="emptyState" class="empty-state hidden"><div class="empty-art"><span>∅</span></div><h3 id="emptyTitle">No records yet</h3><p id="emptyText">Create your first record to get started.</p><button class="secondary-button" id="emptyAddButton" type="button">Create a record <span>↗</span></button></div>
+        <div class="panel-footer"><span id="footerLeft">Showing catalog records</span><span>Changes are saved to MongoDB</span></div>
+      </section>
+      <footer class="page-footer"><span>DocuBase <span class="footer-separator">/</span> MongoDB document database practical</span><span>Schema design · CRUD · Indexing</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="modalBackdrop" role="presentation">
+    <section class="record-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><div><div class="eyebrow"><span class="eyebrow-line"></span><span id="modalEyebrow">DOCUMENT EDITOR</span></div><h2 id="modalTitle">Add product</h2><p id="modalDescription">Create a document in the MongoDB collection.</p></div><button class="icon-button close-button" type="button" id="closeModal" aria-label="Close editor">×</button></div>
+      <form id="recordForm" novalidate><div id="formFields" class="form-fields"></div><div class="modal-error hidden" id="modalError" role="alert"></div><div class="modal-actions"><span class="required-note"><span>*</span> Required fields</span><div><button class="secondary-button" id="cancelModal" type="button">Cancel</button><button class="primary-button" type="submit" id="saveButton"><span id="saveButtonText">Save document</span><span>↗</span></button></div></div></form>
+    </section>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
